@@ -1,4 +1,4 @@
-
+#include <iostream>
 #include <imgui.h>
 #include <imgui-SFML.h>
 
@@ -7,6 +7,8 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/CircleShape.hpp>
 #include <spdlog/spdlog.h>
+
+#include <docopt/docopt.h>
 
 
 static constexpr auto USAGE =
@@ -39,7 +41,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] const char **argv)
   //  }
 
 
-  //Use the default logger (stdout, multi-threaded, colored)
+  // Use the default logger (stdout, multi-threaded, colored)
   spdlog::info("Starting ImGui + SFML");
 
 
@@ -51,44 +53,37 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] const char **argv)
   ImGui::GetStyle().ScaleAllSizes(scale_factor);
   ImGui::GetIO().FontGlobalScale = scale_factor;
 
-  bool state{ false };
-  bool state1{ false };
-  bool state2{ false };
-  bool state3{ false };
-  bool state4{ false };
-  bool state5{ false };
-  bool state6{ false };
-  bool state7{ false };
-  bool state8{ false };
-  bool state9{ false };
-  bool state10{ false };
+  constexpr std::array steps = { "The Plan",
+    "Getting Started",
+    "Finding Errors As Soon As Possible",
+    "Handling Command Line Parameters",
+    "C++ 20 So Far",
+    "Reading SFML Input States",
+    "Managing Game State",
+    "Making Our Game Testable",
+    "Making Game State Allocator Aware",
+    "Add Logging To Game Engine",
+    "Draw A Game Map",
+    "Dialog Trees",
+    "Porting From SFML To SDL" };
 
+  std::array<bool, steps.size()> states{};
   sf::Clock deltaClock;
   while (window.isOpen()) {
     sf::Event event;
     while (window.pollEvent(event)) {
       ImGui::SFML::ProcessEvent(event);
 
-      if (event.type == sf::Event::Closed) {
-        window.close();
-      }
+      if (event.type == sf::Event::Closed) { window.close(); }
     }
 
     ImGui::SFML::Update(window, deltaClock.restart());
-
     ImGui::Begin("The Plan");
 
-    ImGui::Checkbox("0 : The Plan", &state);
-    ImGui::Checkbox("1 : Getting Started", &state1);
-    ImGui::Checkbox("2 : C++ 20 So Far", &state2);
-    ImGui::Checkbox("3 : Reading SFML Input States", &state3);
-    ImGui::Checkbox("4 : Managing Game State", &state4);
-    ImGui::Checkbox("5 : Making Our Game Testable", &state5);
-    ImGui::Checkbox("6 : Making Game State Allocator Aware", &state6);
-    ImGui::Checkbox("7 : Add Logging To Game Engine", &state7);
-    ImGui::Checkbox("8 : Draw A Game Map", &state8);
-    ImGui::Checkbox("9 : Dialog Trees", &state9);
-    ImGui::Checkbox("10 : Porting From SFML To SDL", &state10);
+    for (std::size_t index = 0; const auto &step : steps) {
+      ImGui::Checkbox(fmt::format("{} : {}", index, step).c_str(), &states.at(index));
+      ++index;
+    }
 
     ImGui::End();
     window.clear();
